@@ -3,13 +3,13 @@ defmodule Pangex.StubDevice do
   @data_size 10
 
   def run do
+    secs = Enum.random(3..8)
+    Process.sleep(round(secs * 1000))
     data = @charset
     |> Enum.shuffle()
     |> Enum.take(@data_size)
     |> Enum.join()
     IO.puts(data)
-    secs = Enum.random(2..5)
-    Process.sleep(round(secs * 1000))
     run()
   end
 end

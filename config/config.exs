@@ -9,6 +9,6 @@
 # move said applications out of the umbrella.
 import Config
 
-config :pangex, start_device_cmd: System.get_env("PANGEX_START_DEVICE_CMD", "scripts/stub_device.sh")
+config :pangex, start_device_cmd: System.get_env("PANGEX_START_DEVICE_CMD")
 
 import_config "#{config_env()}.exs"

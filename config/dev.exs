@@ -1,3 +1,3 @@
 import Config
 
-config :pangex, device: {Pangex.Device, %{path: "/dev/tty"}}
+config :pangex, start_device_cmd: "scripts/stub_device.sh"
