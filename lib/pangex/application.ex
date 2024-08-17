@@ -10,7 +10,7 @@ defmodule Pangex.Application do
     children = [
       # Starts a worker by calling: Pangex.Worker.start_link(arg)
       Pangex,
-      device()
+      device_spec()
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
@@ -19,7 +19,11 @@ defmodule Pangex.Application do
     Supervisor.start_link(children, opts)
   end
 
-  defp device do
-    with {:ok, device} <- Application.fetch_env(:pangex, :device), do: device
+  defp device_spec do
+    {Pangex.Device, %{start_device_cmd: start_device_cmd()}}
+  end
+
+  defp start_device_cmd do
+    Application.get_env(:pangex, :start_device_cmd)
   end
 end

@@ -2,6 +2,7 @@ defmodule Pangex do
   @moduledoc """
   Documentation for `Pangex`.
   """
+  require Logger
   use GenServer
 
   @initial_state %{
@@ -16,7 +17,7 @@ defmodule Pangex do
   end
 
   def handle_info({:event, event}, state) do
-    IO.inspect(event)
-    {:noreply, state}
+    Logger.debug("Received event of size #{length event}B")
+    {:noreply, %{state | events: [event | state.events]}}
   end
 end

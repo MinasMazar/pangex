@@ -1,5 +1,5 @@
 defmodule Pangex.Device do
-  alias Porcelain.Process
+  require Logger
   use GenServer
 
   def start_link(opts) do
@@ -7,25 +7,27 @@ defmodule Pangex.Device do
   end
 
   def init(state) do
-    proc = %Process{pid: pid} = Porcelain.spawn_shell("cat #{state.path}",
-      out: {:send, self()}
-    )
-    {:ok, Map.put(state, :proc, proc)}
+    Logger.debug("Starting device with command #{inspect state.start_device_cmd}")
+    port = Port.open({:spawn, state.start_device_cmd}, [])
+    monitor = Port.monitor(port)
+    {:ok,
+     state
+     |> Map.put(:port, port)
+     |> Map.put(:monitor, monitor)}
   end
 
-  def handle_info({_pid, :result, result}, state) do
-    IO.inspect(result)
+  def handle_info({_port, {:data, data}}, state) do
+    send(Pangex, {:event, data})
     {:noreply, state}
   end
 
-  def handle_info({_pid, :data, :out, data}, state) do
-    IO.inspect(data)
+  def handle_info({_port, :closed}, state) do
+    IO.puts("PORT CLOSED")
     {:noreply, state}
   end
 
-  def build_event(event, context: _state) do
-    with event <- Map.put(event, :type, :nop) do
-      event
-    end
+  def handle_info({:DOWN, _ref, :port, _obj, reason}, state) do
+    IO.puts("Down due to #{inspect reason}")
+    {:stop, {:shutdown, :normal}, state}
   end
 end
