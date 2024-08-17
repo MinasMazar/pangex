@@ -11,7 +11,7 @@ defmodule Pangex.Application do
       # Starts a worker by calling: Pangex.Worker.start_link(arg)
       Pangex,
       device_spec()
-    ]
+    ] |> Enum.filter(& &1)
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
@@ -20,7 +20,7 @@ defmodule Pangex.Application do
   end
 
   defp device_spec do
-    {Pangex.Device, %{start_device_cmd: start_device_cmd()}}
+    with cmd <- start_device_cmd(), do: cmd && {Pangex.Device, %{start_device_cmd: cmd}}
   end
 
   defp start_device_cmd do

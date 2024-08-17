@@ -3,9 +3,10 @@ defmodule PangexTest do
   doctest Pangex
 
   test "Pangex can listen to a device" do
-    event = %{}
-    send(Pangex.StubbedDevice, :call)
+    pid = GenServer.whereis(Pangex)
 
-    assert_receive {:event, event}
+    send(pid, {:event, 'this is a stream of data'})
+
+    assert length(Pangex.events()) > 0
   end
 end
